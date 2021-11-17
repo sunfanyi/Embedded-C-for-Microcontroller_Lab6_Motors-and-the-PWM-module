@@ -14,10 +14,17 @@
 void main(void){
     Timer0_init();
     Interrupts_init();
-	//don't forget TRIS for your output!
+	
+    TRISDbits.TRISD5 = 0;
+    
+    TRISHbits.TRISH3 = 0;  // testing
+    LATHbits.LATH3 = 0;
+    TRISDbits.TRISD7 = 0;
+    LATDbits.LATD7 = 0;
+    
 
     while(1){
-		//write your code to call angle2PWM() to set the servo angle
+        angle2PWM(50);
 
     }
 }

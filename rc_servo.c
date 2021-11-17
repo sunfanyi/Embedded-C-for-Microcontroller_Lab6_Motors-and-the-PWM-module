@@ -21,12 +21,13 @@ void __interrupt(high_priority) HighISR()
 {
     if (PIR0bits.TMR0IF)
     {
-        if(LAT?bits.???){ //if output pin currently high
+//        LATHbits.LATH3 = !LATHbits.LATH3;
+        if (PWM_PIN){ //if output pin currently high
             write16bitTMR0val(65535-off_period); //set new off_period
-            LAT?bits.???=0; //turn your output pin off here
+            PWM_PIN = 0; //turn your output pin off here
         } else {
             write16bitTMR0val(65535-on_period);  //set new on_period
-            LAT?bits.???=1; //turn your output pin off here
+            PWM_PIN = 1; //turn your output pin off here
         }
     }
     PIR0bits.TMR0IF=0; 
@@ -39,11 +40,15 @@ void Timer0_init(void)
 {
     T0CON1bits.T0CS=0b010; // Fosc/4
     T0CON1bits.T0ASYNC=1; // see datasheet errata - needed to ensure correct operation when Fosc/4 used as clock source
-    T0CON1bits.T0CKPS=????; // need to work out prescaler to produce a timer tick corresponding to 1 deg angle change
+    // 1.31 ms for 1 deg, 20ms/1.31ms=15.28, 65535/15.28=4289 
+    // suppose 65535 periods for 20ms, then 4289 periods for 1.31ms
+    // PS = 1.31ms * 64MHz/4 / (4289 + 1) = 4.88 ~= 8
+    T0CON1bits.T0CKPS=0b0011; // 1:8 need to work out prescaler to produce a timer tick corresponding to 1 deg angle change
     T0CON0bits.T016BIT=1;	//16bit mode	
 	
+    // 20ms / (8 / 16MHz) -1 = 39999 = T_PERIOD
     // it's a good idea to initialise the timer so that it initially overflows after 20 ms
-    TMR0H=(65535-T_PERIOD)>>8;            
+    TMR0H=(65535-T_PERIOD)>>8;
     TMR0L=(unsigned char)(65535-T_PERIOD); // casting to unsigned char here to suppress warning
     T0CON0bits.T0EN=1;	//start the timer
 }
@@ -64,6 +69,8 @@ void write16bitTMR0val(unsigned int tmp)
  * off_period is the remaining time left (calculate from on_period and T_PERIOD)
 ************************************/
 void angle2PWM(int angle){
-    on_period = ???;	//avoid floating point numbers and be careful of calculation order...
-    off_period = ???;
+    // T_on = 0.5 + (2.1-0.5)/180 * (angle + 90)  linear interpolation
+    // on_period = T_on / T_clock - 1
+    on_period = 999 + 160 * (angle + 90) / 9;	// by simplification
+    off_period = T_PERIOD - on_period;
 }
