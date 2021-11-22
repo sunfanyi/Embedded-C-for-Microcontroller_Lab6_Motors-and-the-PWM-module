@@ -16,15 +16,15 @@ void main(void){
     Interrupts_init();
 	
     TRISDbits.TRISD5 = 0;
+    PWM_PIN = 0;
+            
+//    TRISHbits.TRISH3 = 0;  // testing
+//    LATHbits.LATH3 = 0;
+//    TRISDbits.TRISD7 = 0;
+//    LATDbits.LATD7 = 0;
     
-    TRISHbits.TRISH3 = 0;  // testing
-    LATHbits.LATH3 = 0;
-    TRISDbits.TRISD7 = 0;
-    LATDbits.LATD7 = 0;
-    
-
+//    signed char angle = -90;
+    angle2PWM(180);
     while(1){
-        angle2PWM(50);
-
     }
 }

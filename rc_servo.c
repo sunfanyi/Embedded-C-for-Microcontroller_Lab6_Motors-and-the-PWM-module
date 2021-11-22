@@ -40,13 +40,10 @@ void Timer0_init(void)
 {
     T0CON1bits.T0CS=0b010; // Fosc/4
     T0CON1bits.T0ASYNC=1; // see datasheet errata - needed to ensure correct operation when Fosc/4 used as clock source
-    // 1.31 ms for 1 deg, 20ms/1.31ms=15.28, 65535/15.28=4289 
-    // suppose 65535 periods for 20ms, then 4289 periods for 1.31ms
-    // PS = 1.31ms * 64MHz/4 / (4289 + 1) = 4.88 ~= 8
-    T0CON1bits.T0CKPS=0b0011; // 1:8 need to work out prescaler to produce a timer tick corresponding to 1 deg angle change
+    T0CON1bits.T0CKPS=0b0111; // 1:128 need to work out prescaler to produce a timer tick corresponding to 1 deg angle change
     T0CON0bits.T016BIT=1;	//16bit mode	
 	
-    // 20ms / (8 / 16MHz) -1 = 39999 = T_PERIOD
+    // 20ms / (128 / 16MHz) -1 = 2499 = T_PERIOD
     // it's a good idea to initialise the timer so that it initially overflows after 20 ms
     TMR0H=(65535-T_PERIOD)>>8;
     TMR0L=(unsigned char)(65535-T_PERIOD); // casting to unsigned char here to suppress warning
@@ -68,9 +65,9 @@ void write16bitTMR0val(unsigned int tmp)
  * the on_period varies linearly according to angle (-90 deg is 0.5 ms, +90 is 2.1 ms)
  * off_period is the remaining time left (calculate from on_period and T_PERIOD)
 ************************************/
-void angle2PWM(int angle){
-    // T_on = 0.5 + (2.1-0.5)/180 * (angle + 90)  linear interpolation
+void angle2PWM(unsigned int angle){
+    // T_on = 1 + (2.1-1)/180 * angle  linear interpolation
     // on_period = T_on / T_clock - 1
-    on_period = 999 + 160 * (angle + 90) / 9;	// by simplification
+    on_period = 124 + angle * 55 / 72;
     off_period = T_PERIOD - on_period;
 }
