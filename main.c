@@ -23,8 +23,15 @@ void main(void){
 //    TRISDbits.TRISD7 = 0;
 //    LATDbits.LATD7 = 0;
     
-//    signed char angle = -90;
-    angle2PWM(180);
+    unsigned int angle = 0;
     while(1){
+        while (angle <= 180) {
+            angle2PWM(angle++);
+            __delay_ms(50);
+        }
+        while (angle >= 0) {
+            angle2PWM(angle--);
+            __delay_ms(50);
+        }
     }
 }
