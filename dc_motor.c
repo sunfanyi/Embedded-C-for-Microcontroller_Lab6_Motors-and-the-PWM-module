@@ -2,17 +2,28 @@
 #include "dc_motor.h"
 
 // function initialise T2 and PWM for DC motor control
-void initDCmotorsPWM(int PWMperiod){
+void initDCmotorsPWM(int PWMfreq){
 	//initialise your TRIS and LAT registers for PWM
-
+    TRISEbits.TRISE2=0;
+    TRISEbits.TRISE4=0;
+    TRISCbits.TRISC7=0;
+    TRISGbits.TRISG6=0;
+    
+    LATEbits.LATE2=0;  // power pin
+    LATEbits.LATE4=1;  // direction pin
+    LATCbits.LATC7=0;
+    LATGbits.LATG7=1;
+    
     // timer 2 config
-    T2CONbits.CKPS=???; // 1:??? prescaler
-    T2HLTbits.MODE=0b00000; // Free Running Mode, software gate only
-    T2CLKCONbits.CS=0b0001; // Fosc/4
+    // PS/16e6 * 255 > 1/5kHz  // compatible for any PWNfreq above 5kHz
+    T2CONbits.CKPS = 0b100; // 1:16 prescaler
+    T2HLTbits.MODE = 0b00000; // Free Running Mode, software gate only
+    T2CLKCONbits.CS = 0b0001; // Fosc/4
 
     // Tpwm*(Fosc/4)/prescaler - 1 = PTPER
-    T2PR=??; //Period reg 10kHz base period
-    T2CONbits.ON=1;
+    // 1/PWMfreq * (Fosc/4)/prescaler - 1 = PTPER
+    T2PR = 16000 / PWMfreq / 16; //Period reg based on PWNfreq
+    T2CONbits.ON = 1;
     
     RE2PPS=0x0A; //PWM6 on RE2
     RC7PPS=0x0B; //PMW7 on RC7
@@ -69,6 +80,12 @@ void turnRight(struct DC_motor *mL, struct DC_motor *mR)
 //function to make the robot go straight
 void fullSpeedAhead(struct DC_motor *mL, struct DC_motor *mR)
 {
-
+    for(unsigned char i=0;i<100;i+=10){  // increment power, 10% each time
+        mL->power=i;
+        mR->power=i;
+        setMotorPWM(mL);
+        setMotorPWM(mR);
+        __delay_ms(100);
+    }
 }
 
