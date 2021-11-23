@@ -62,26 +62,35 @@ void setMotorPWM(struct DC_motor *m)
 //function to stop the robot gradually 
 void stop(struct DC_motor *mL, struct DC_motor *mR)
 {
-    while (mL->power | mR->power) {  // only stop when both reach 0
+    while (mL->power | mR->power) {
+        // only stop when both reach 0
         // decrement power, 10% each time
         if (mL->power) {mL->power -= 10;}
         if (mR->power) {mR->power -= 10;}
         setMotorPWM(mL);
         setMotorPWM(mR);
-        __delay_ms(100);
+        __delay_ms(10);
     }
 }
 
 //function to make the robot turn left 
 void turnLeft(struct DC_motor *mL, struct DC_motor *mR)
 {
-
+    while (mR->power!=70) {
+        mR->power += 10;
+        setMotorPWM(mR);
+        __delay_ms(10);
+    }
 }
 
 //function to make the robot turn right 
 void turnRight(struct DC_motor *mL, struct DC_motor *mR)
 {
- 
+     while (mL->power!=70) {
+        mL->power += 10;
+        setMotorPWM(mL);
+        __delay_ms(10);
+    }
 }
 
 //function to make the robot go straight
@@ -90,12 +99,14 @@ void fullSpeedAhead(struct DC_motor *mL, struct DC_motor *mR,
 {
     mL->direction = direction;
     mR->direction = direction;
-    while ( (!(mL->power==100)) | (!(mR->power==100)) ) {  // only stop when both reach max power
+    
+    unsigned int max_power = 100;  // temporary value for testing, max 100
+    while ((mL->power!=max_power) | (mR->power!=max_power)) {  // only stop when both reach max power
         // increment power, 10% each time
-        if (!(mL->power==100)) {mL->power += 10;}
-        if (!(mR->power==100)) {mR->power += 10;}
+        if (mL->power!=max_power) {mL->power += 10;}
+        if (mR->power!=max_power) {mR->power += 10;}
         setMotorPWM(mL);
         setMotorPWM(mR);
-        __delay_ms(100);
+        __delay_ms(10);
     }
 }

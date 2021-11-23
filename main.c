@@ -39,16 +39,16 @@ void main(void){
     
     while(1){
         fullSpeedAhead(&motorL, &motorR, 1);  // forward
-        __delay_ms(1000);
-//        LATHbits.LATH3 = 1;
+        __delay_ms(600);
         
         stop(&motorL, &motorR);
-        __delay_ms(1000);
-//        LATDbits.LATD7 = 1;
         
-        fullSpeedAhead(&motorL, &motorR, 0);  // backward
-        __delay_ms(1000);
+        turnRight(&motorL, &motorR);
+        __delay_ms(150);
+//        fullSpeedAhead(&motorL, &motorR, 0);  // backward
+//        __delay_ms(1000);
+        
         stop(&motorL, &motorR);
-        __delay_ms(1000);
+        __delay_ms(600);
     }
 }
