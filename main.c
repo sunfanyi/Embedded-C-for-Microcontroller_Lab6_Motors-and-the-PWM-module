@@ -32,11 +32,23 @@ void main(void){
     motorR.dir_pin = 6; 						//pin RC7 controls direction
     motorR.PWMperiod = PWMcycle; 			//store PWMperiod for motor
     
-    setMotorPWM(&motorL);
-    setMotorPWM(&motorR);
+    TRISHbits.TRISH3 = 0;  // testing
+    LATHbits.LATH3 = 0;
+    TRISDbits.TRISD7 = 0;
+    LATDbits.LATD7 = 0;
     
     while(1){
-        fullSpeedAhead(&motorL, &motorR);
-        __delay_ms(3000);
+        fullSpeedAhead(&motorL, &motorR, 1);  // forward
+        __delay_ms(1000);
+//        LATHbits.LATH3 = 1;
+        
+        stop(&motorL, &motorR);
+        __delay_ms(1000);
+//        LATDbits.LATD7 = 1;
+        
+        fullSpeedAhead(&motorL, &motorR, 0);  // backward
+        __delay_ms(1000);
+        stop(&motorL, &motorR);
+        __delay_ms(1000);
     }
 }

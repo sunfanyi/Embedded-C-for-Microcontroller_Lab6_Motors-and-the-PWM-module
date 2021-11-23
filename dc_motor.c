@@ -2,7 +2,7 @@
 #include "dc_motor.h"
 
 // function initialise T2 and PWM for DC motor control
-void initDCmotorsPWM(int PWMfreq){
+void initDCmotorsPWM(unsigned char PWMfreq){
 	//initialise your TRIS and LAT registers for PWM
     TRISEbits.TRISE2=0;
     TRISEbits.TRISE4=0;
@@ -62,7 +62,14 @@ void setMotorPWM(struct DC_motor *m)
 //function to stop the robot gradually 
 void stop(struct DC_motor *mL, struct DC_motor *mR)
 {
-
+    while (mL->power | mR->power) {  // only stop when both reach 0
+        // decrement power, 10% each time
+        if (mL->power) {mL->power -= 10;}
+        if (mR->power) {mR->power -= 10;}
+        setMotorPWM(mL);
+        setMotorPWM(mR);
+        __delay_ms(100);
+    }
 }
 
 //function to make the robot turn left 
@@ -78,14 +85,17 @@ void turnRight(struct DC_motor *mL, struct DC_motor *mR)
 }
 
 //function to make the robot go straight
-void fullSpeedAhead(struct DC_motor *mL, struct DC_motor *mR)
+void fullSpeedAhead(struct DC_motor *mL, struct DC_motor *mR,
+        unsigned char direction)
 {
-    for(unsigned char i=0;i<100;i+=10){  // increment power, 10% each time
-        mL->power=i;
-        mR->power=i;
+    mL->direction = direction;
+    mR->direction = direction;
+    while ( (!(mL->power==100)) | (!(mR->power==100)) ) {  // only stop when both reach max power
+        // increment power, 10% each time
+        if (!(mL->power==100)) {mL->power += 10;}
+        if (!(mR->power==100)) {mR->power += 10;}
         setMotorPWM(mL);
         setMotorPWM(mR);
         __delay_ms(100);
     }
 }
-
