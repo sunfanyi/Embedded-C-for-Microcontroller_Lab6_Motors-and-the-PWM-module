@@ -37,18 +37,63 @@ void main(void){
     TRISDbits.TRISD7 = 0;
     LATDbits.LATD7 = 0;
     
+    __delay_ms(3000);  // be ready!
     while(1){
         fullSpeedAhead(&motorL, &motorR, 1);  // forward
         __delay_ms(600);
-        
         stop(&motorL, &motorR);
+        turnLeft(&motorL, &motorR);
+        __delay_ms(150);
         
+        fullSpeedAhead(&motorL, &motorR, 1);  // forward
+        __delay_ms(600);
+        stop(&motorL, &motorR);
+        turnLeft(&motorL, &motorR);
+        __delay_ms(150);
+        
+        fullSpeedAhead(&motorL, &motorR, 1);  // forward
+        __delay_ms(600);
+        stop(&motorL, &motorR);
+        turnLeft(&motorL, &motorR);
+        __delay_ms(150);
+        
+        // stop for 1 sec
+        stop(&motorL, &motorR);
+        __delay_ms(930);
+        
+        // turn 180 deg
+        turnLeft(&motorL, &motorR);
+        __delay_ms(150);
+        turnLeft(&motorL, &motorR);
+        __delay_ms(150);
+        
+        
+        fullSpeedAhead(&motorL, &motorR, 1);  // forward
+        __delay_ms(600);
+        stop(&motorL, &motorR);
         turnRight(&motorL, &motorR);
         __delay_ms(150);
-//        fullSpeedAhead(&motorL, &motorR, 0);  // backward
-//        __delay_ms(1000);
         
-        stop(&motorL, &motorR);
+        fullSpeedAhead(&motorL, &motorR, 1);  // forward
         __delay_ms(600);
+        stop(&motorL, &motorR);
+        turnRight(&motorL, &motorR);
+        __delay_ms(150);
+        
+        fullSpeedAhead(&motorL, &motorR, 1);  // forward
+        __delay_ms(600);
+        stop(&motorL, &motorR);
+        turnRight(&motorL, &motorR);
+        __delay_ms(150);
+        
+        // stop for 1 sec
+        stop(&motorL, &motorR);
+        __delay_ms(930);
+        
+        // turn 180 deg
+        turnRight(&motorL, &motorR);
+        __delay_ms(150);
+        turnRight(&motorL, &motorR);
+        __delay_ms(150);
     }
 }
